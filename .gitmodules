@@ -1,0 +1,6 @@
+[submodule "STFAN"]
+	path = STFAN
+	url = git@github.com:sczhou/STFAN.git
+[submodule "deblur"]
+	path = deblur
+	url = git@github.com:ljzycmd/SimDeblur.git

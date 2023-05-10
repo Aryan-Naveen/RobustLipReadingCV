@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw
 from IPython import display
 import matplotlib
 import os
+import sys
 
 
 def get_frames(video_path):
@@ -62,7 +63,7 @@ def get_cropped_frames(frames, h, w, min_face_h=100, min_face_w=100):
               doty = (close_box_cord[1] + close_box_cord[3]) / 2
               xy = [(dotx,doty)]
 
-              cropped_face = frames[i][int(close_box_cord[1]):int(close_box_cord[3]),int(close_box_cord[0]):int(close_box_cord[2]),:]
+              cropped_face = frames[i][max(int(close_box_cord[1]) - 40, 0): min(int(close_box_cord[3]) + 40, h - 1), max(int(close_box_cord[0]) - 40, 0): min(int(close_box_cord[2]) + 40, w - 1),:]
               face_h_avg += cropped_face.shape[0]
               face_w_avg += cropped_face.shape[1]
               frames_cropped.append(np.array(cropped_face))
@@ -74,11 +75,16 @@ def get_cropped_frames(frames, h, w, min_face_h=100, min_face_w=100):
 
 
 if __name__ == '__main__':
+    test_deblurred = int(sys.argv[1]) == 0 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print('Running on device: {}'.format(device))
 
     mtcnn = MTCNN(keep_all=True, device=device)
     input_path = '/home/anaveen/Documents/harvard_ws/spring2023/mit6.8301/RobustLipReadingCV/data/'
+    if test_deblurred:
+        input_path += 'deblurred/'
+    else:
+        input_path += 'blurred/'
     print(os.listdir(input_path))
 
     demo_list = ''
@@ -88,6 +94,7 @@ if __name__ == '__main__':
         trim_dim = min(face_h_avg,face_w_avg)
         face_frames = resize(frames_cropped, trim_dim)
         dim = face_frames[0].size
+        print(dim)
 
         fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
         video_tracked = cv2.VideoWriter('/home/anaveen/Documents/harvard_ws/spring2023/mit6.8301/RobustLipReadingCV/deep_lip_reading/media/example/' + video_file, fourcc, 25.0, dim)
