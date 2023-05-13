@@ -75,16 +75,17 @@ def get_cropped_frames(frames, h, w, min_face_h=100, min_face_w=100):
 
 
 if __name__ == '__main__':
-    test_deblurred = int(sys.argv[1]) == 0 
+    test_deblurred = int(sys.argv[1]) == 0
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print('Running on device: {}'.format(device))
 
     mtcnn = MTCNN(keep_all=True, device=device)
     input_path = '/home/anaveen/Documents/harvard_ws/spring2023/mit6.8301/RobustLipReadingCV/data/'
-    if test_deblurred:
-        input_path += 'deblurred/'
-    else:
-        input_path += 'blurred/'
+    # if test_deblurred:
+    #     input_path += 'deblurred/'
+    # else:
+    #     print("bfhds")
+    input_path += 'blurred/'
     print(os.listdir(input_path))
 
     demo_list = ''
@@ -97,7 +98,9 @@ if __name__ == '__main__':
         print(dim)
 
         fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-        video_tracked = cv2.VideoWriter('/home/anaveen/Documents/harvard_ws/spring2023/mit6.8301/RobustLipReadingCV/deep_lip_reading/media/example/' + video_file, fourcc, 25.0, dim)
+        # output_dir = '/home/anaveen/Documents/harvard_ws/spring2023/mit6.8301/RobustLipReadingCV/deep_lip_reading/media/example/'
+        output_dir = input_path
+        video_tracked = cv2.VideoWriter(output_dir + video_file, fourcc, 25.0, dim)
         for frame in face_frames:
             video_tracked.write(cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR))
         video_tracked.release()
